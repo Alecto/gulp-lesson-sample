@@ -41,6 +41,7 @@ function scss() {
   return src(PATH.scssFile)
     .pipe(sass({ outputStyle: 'expanded' }).on('error', sass.logError))
     .pipe(postcss(PLUGINS))
+    .pipe(csscomb('./.csscomb.json'))
     .pipe(dest(PATH.cssFolder))
     .pipe(
       notify({ message: ' ------------------ SCSS compiled!', sound: false })
@@ -64,6 +65,7 @@ function scssMin() {
 
   return src(PATH.scssFile)
     .pipe(sass({ outputStyle: 'expanded' }).on('error', sass.logError))
+    .pipe(csscomb('./.csscomb.json'))
     .pipe(postcss(pluginsExtended))
     .pipe(rename({ suffix: '.min' }))
     .pipe(dest(PATH.cssFolder))
@@ -71,6 +73,18 @@ function scssMin() {
       notify({ message: ' ------------------ MIN css builded!', sound: false })
     )
     .pipe(browserSync.reload({ stream: true }));
+}
+
+function comb() {
+  return src(PATH.scssFiles)
+    .pipe(csscomb('./.csscomb.json'))
+    .on(
+      'error',
+      notify.onError(function (error) {
+        return 'File: ' + error.message;
+      })
+    )
+    .pipe(dest(PATH.scssFolder));
 }
 
 function concatJs() {
@@ -93,7 +107,10 @@ function uglifyJs() {
 
 function uglifyEs6() {
   return src(PATH.jsFiles)
-    .pipe(terser())
+    .pipe(terser({
+      toplevel: true,
+      output: { quote_style: 3 }
+    }))
     .pipe(rename({ suffix: '.min' }))
     .pipe(dest(PATH.jsFolder));
 }
@@ -105,18 +122,6 @@ function syncInit() {
     },
     notify: false,
   });
-}
-
-function comb() {
-  return src(PATH.scssFiles)
-    .pipe(csscomb('./.csscomb.json'))
-    .on(
-      'error',
-      notify.onError(function (error) {
-        return 'File: ' + error.message;
-      })
-    )
-    .pipe(dest(PATH.scssFolder));
 }
 
 async function sync() {
