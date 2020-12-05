@@ -27,6 +27,7 @@ const PATH = {
   jsFolder: './assets/js',
   jsDestFolder: './dest/js',
   jsBundleName: 'all.js',
+  buildFolder: 'dest'
 };
 
 const PLUGINS = [
@@ -115,6 +116,27 @@ function uglifyEs6() {
     .pipe(dest(PATH.jsFolder));
 }
 
+
+function buildJS() {
+  return src(PATH.jsFolder + '/**/*.min.js')
+    .pipe(dest(PATH.buildFolder + '/js'))
+}
+
+function buildHTML() {
+  return src(PATH.htmlFiles)
+    .pipe(dest(PATH.buildFolder + '/templates'))
+}
+
+function buildCSS() {
+  return src(PATH.cssFolder + '/*.min.css')
+    .pipe(dest(PATH.buildFolder + '/css'))
+}
+
+async function clearFolder() {
+  await del(PATH.buildFolder, {force: true});
+  return true;
+}
+
 function syncInit() {
   browserSync({
     server: {
@@ -142,4 +164,5 @@ task('comb', comb);
 task('min', scssMin);
 task('dev', scssDev);
 task('scss', series(scss, scssMin));
+task('build', series(clearFolder, parallel(buildHTML, buildCSS, buildJS)));
 task('watch', watchFiles);
