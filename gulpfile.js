@@ -12,6 +12,7 @@ const sortCSSmq = require('sort-css-media-queries');
 const uglify = require('gulp-uglify');
 const terser = require('gulp-terser');
 const concat = require('gulp-concat');
+const del = require('del');
 
 const PATH = {
   scssFile: './assets/scss/style.scss',
@@ -47,7 +48,7 @@ function scss() {
     .pipe(
       notify({ message: ' ------------------ SCSS compiled!', sound: false })
     )
-    .pipe(browserSync.reload({ stream: true }));
+    .pipe(browserSync.stream());
 }
 
 function scssDev() {
