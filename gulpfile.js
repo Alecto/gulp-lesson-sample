@@ -26,7 +26,6 @@ const PATH = {
     '!./assets/js/**/all.js',
   ],
   jsFolder: './assets/js',
-  jsDestFolder: './dest/js',
   jsBundleName: 'all.js',
   buildFolder: 'dest'
 };
@@ -100,7 +99,7 @@ function uglifyJs() {
     .pipe(
       uglify({
         toplevel: true,
-        output: { quote_style: 3 },
+        output: { quote_style: 3 }
       })
     )
     .pipe(rename({ suffix: '.min' }))
