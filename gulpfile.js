@@ -40,13 +40,12 @@ const PLUGINS = [
 
 function scss() {
   return src(PATH.scssFile)
-    .pipe(sass({ outputStyle: 'expanded' }).on('error', sass.logError))
+    .pipe(sass({outputStyle: 'expanded'}).on('error', notify.onError((err) => `File: ${err.message}`)))
+    // .pipe(sass({outputStyle: 'expanded'}).on('error', sass.logError))
     .pipe(postcss(PLUGINS))
     .pipe(csscomb('./.csscomb.json'))
     .pipe(dest(PATH.cssFolder))
-    .pipe(
-      notify({ message: ' ------------------ SCSS compiled!', sound: false })
-    )
+    .pipe(notify({message: 'SCSS compiled successfully!'}))
     .pipe(browserSync.stream());
 }
 
@@ -62,7 +61,8 @@ function scssDev() {
 }
 
 function scssMin() {
-  const pluginsExtended = PLUGINS.concat([cssnano({ preset: 'default' })]);
+  const pluginsExtended = [...PLUGINS, cssnano({preset: 'default'})];
+  // const pluginsExtended = PLUGINS.concat([cssnano({ preset: 'default' })]);
 
   return src(PATH.scssFile)
     .pipe(sass({ outputStyle: 'expanded' }).on('error', sass.logError))
@@ -78,13 +78,7 @@ function scssMin() {
 
 function comb() {
   return src(PATH.scssFiles)
-    .pipe(csscomb('./.csscomb.json'))
-    .on(
-      'error',
-      notify.onError(function (error) {
-        return 'File: ' + error.message;
-      })
-    )
+    .pipe(csscomb().on('error', notify.onError((err) => `File: ${err.message}`)))
     .pipe(dest(PATH.scssFolder));
 }
 
@@ -99,7 +93,7 @@ function uglifyJs() {
     .pipe(
       uglify({
         toplevel: true,
-        output: { quote_style: 3 }
+        output: { quote_style: 1 }
       })
     )
     .pipe(rename({ suffix: '.min' }))
