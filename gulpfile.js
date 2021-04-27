@@ -116,7 +116,6 @@ function uglifyEs6() {
     .pipe(dest(PATH.jsFolder));
 }
 
-
 function buildJS() {
   return src(PATH.jsFolder + '/**/*.min.js')
     .pipe(dest(PATH.buildFolder + '/js'))
