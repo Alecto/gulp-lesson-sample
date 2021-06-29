@@ -1,5 +1,5 @@
 const { task, series, parallel, src, dest, watch } = require('gulp');
-const sass = require('gulp-sass');
+const sass = require('gulp-sass')(require('sass'));
 const browserSync = require('browser-sync');
 const notify = require('gulp-notify');
 const cssnano = require('cssnano');
@@ -15,18 +15,20 @@ const concat = require('gulp-concat');
 const del = require('del');
 
 const PATH = {
-  scssFile: './assets/scss/style.scss',
-  scssFiles: './assets/scss/**/*.scss',
+  scssFile:   './assets/scss/style.scss',
+  scssFiles:  './assets/scss/**/*.scss',
   scssFolder: './assets/scss',
-  cssFolder: './assets/css',
-  htmlFiles: './*.html',
+  cssMinFiles:'./assets/css/**/*.min.css',
+  cssFolder:  './assets/css',
+  htmlFiles:  './*.html',
   jsFiles: [
     './assets/js/**/*.js',
     '!./assets/js/**/*.min.js',
     '!./assets/js/**/all.js',
   ],
-  jsFolder: './assets/js',
-  jsBundleName: 'all.js',
+  jsMinFiles:  './assets/js/**/*.min.js',
+  jsFolder:    './assets/js',
+  jsBundleName:'all.js',
   buildFolder: 'dest'
 };
 
@@ -57,7 +59,7 @@ function scssDev() {
     .pipe(
       notify({ message: ' ------------------ SCSS compiled!', sound: false })
     )
-    .pipe(browserSync.reload({ stream: true }));
+    .pipe(browserSync.stream());
 }
 
 function scssMin() {
@@ -73,7 +75,7 @@ function scssMin() {
     .pipe(
       notify({ message: ' ------------------ MIN css builded!', sound: false })
     )
-    .pipe(browserSync.reload({ stream: true }));
+    .pipe(browserSync.stream());
 }
 
 function comb() {
@@ -111,7 +113,7 @@ function uglifyEs6() {
 }
 
 function buildJS() {
-  return src(PATH.jsFolder + '/**/*.min.js')
+  return src(PATH.jsMinFiles)
     .pipe(dest(PATH.buildFolder + '/js'))
 }
 
@@ -121,7 +123,7 @@ function buildHTML() {
 }
 
 function buildCSS() {
-  return src(PATH.cssFolder + '/*.min.css')
+  return src(PATH.cssMinFiles)
     .pipe(dest(PATH.buildFolder + '/css'))
 }
 
